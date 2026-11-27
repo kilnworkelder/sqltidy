@@ -12,7 +12,7 @@ func newVersionCmd() *cobra.Command {
 		Short: "Print version information",
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, _ []string) {
-			fmt.Fprintf(cmd.OutOrStdout(), "sqltidy %s (commit %s, built %s)\n",
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "sqltidy %s (commit %s, built %s)\n",
 				build.Version, build.Commit, build.Date)
 		},
 	}

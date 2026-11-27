@@ -22,13 +22,13 @@ func newExportCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			defer closeFn()
+			defer func() { _ = closeFn() }()
 
 			db, err := openDB()
 			if err != nil {
 				return err
 			}
-			defer db.Close()
+			defer func() { _ = db.Close() }()
 			return db.Export(cmd.Context(), args[0], w, f)
 		},
 	}
@@ -69,18 +69,18 @@ func newUpsertCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			defer closeFn()
+			defer func() { _ = closeFn() }()
 
 			db, err := openDB()
 			if err != nil {
 				return err
 			}
-			defer db.Close()
+			defer func() { _ = db.Close() }()
 			res, err := db.Upsert(cmd.Context(), r, opts)
 			if err != nil {
 				return err
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), "upserted %d rows into %s\n", res.Rows, res.Table)
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "upserted %d rows into %s\n", res.Rows, res.Table)
 			return nil
 		},
 	}

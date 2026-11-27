@@ -23,7 +23,7 @@ func newTransformCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			defer db.Close()
+			defer func() { _ = db.Close() }()
 
 			table := args[0]
 			w := cmd.OutOrStdout()
@@ -38,7 +38,7 @@ func newTransformCmd() *cobra.Command {
 				if err := db.RenameColumn(cmd.Context(), table, oldName, newName); err != nil {
 					return err
 				}
-				fmt.Fprintf(w, "renamed %s.%s -> %s\n", table, oldName, newName)
+				_, _ = fmt.Fprintf(w, "renamed %s.%s -> %s\n", table, oldName, newName)
 			}
 			for _, spec := range adds {
 				name, typ, err := splitPair(spec)
@@ -48,13 +48,13 @@ func newTransformCmd() *cobra.Command {
 				if err := db.AddColumn(cmd.Context(), table, name, typ); err != nil {
 					return err
 				}
-				fmt.Fprintf(w, "added %s.%s\n", table, name)
+				_, _ = fmt.Fprintf(w, "added %s.%s\n", table, name)
 			}
 			for _, name := range drops {
 				if err := db.DropColumn(cmd.Context(), table, name); err != nil {
 					return err
 				}
-				fmt.Fprintf(w, "dropped %s.%s\n", table, name)
+				_, _ = fmt.Fprintf(w, "dropped %s.%s\n", table, name)
 			}
 			return nil
 		},
@@ -84,12 +84,12 @@ func newFTSEnableCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			defer db.Close()
+			defer func() { _ = db.Close() }()
 			table := args[0]
 			if err := db.EnableFTS(cmd.Context(), table); err != nil {
 				return err
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), "enabled FTS for %s (index %s)\n", table, sqltidy.FTSName(table))
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "enabled FTS for %s (index %s)\n", table, sqltidy.FTSName(table))
 			return nil
 		},
 	}
@@ -107,7 +107,7 @@ func newFTSSearchCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			defer db.Close()
+			defer func() { _ = db.Close() }()
 			rs, err := db.SearchFTS(cmd.Context(), args[0], args[1], limit)
 			if err != nil {
 				return err

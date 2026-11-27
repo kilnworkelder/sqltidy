@@ -32,7 +32,7 @@ func (db *DB) Tables(ctx context.Context) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var names []string
 	for rows.Next() {
@@ -81,7 +81,7 @@ func (db *DB) TableInfo(ctx context.Context, table string) (*TableInfo, error) {
 			pk      int
 		)
 		if err := rows.Scan(&cid, &name, &ctype, &notnull, &dflt, &pk); err != nil {
-			rows.Close()
+			_ = rows.Close()
 			return nil, err
 		}
 		col := ColumnInfo{Name: name, Type: ctype, NotNull: notnull != 0, PK: pk > 0}
@@ -92,10 +92,10 @@ func (db *DB) TableInfo(ctx context.Context, table string) (*TableInfo, error) {
 		info.Columns = append(info.Columns, col)
 	}
 	if err := rows.Err(); err != nil {
-		rows.Close()
+		_ = rows.Close()
 		return nil, err
 	}
-	rows.Close()
+	_ = rows.Close()
 
 	idx, err := db.sql.QueryContext(ctx, "PRAGMA index_list("+quoteIdent(table)+")")
 	if err != nil {
@@ -110,16 +110,16 @@ func (db *DB) TableInfo(ctx context.Context, table string) (*TableInfo, error) {
 			partial int
 		)
 		if err := idx.Scan(&seq, &name, &unique, &origin, &partial); err != nil {
-			idx.Close()
+			_ = idx.Close()
 			return nil, err
 		}
 		info.Indexes = append(info.Indexes, name)
 	}
 	if err := idx.Err(); err != nil {
-		idx.Close()
+		_ = idx.Close()
 		return nil, err
 	}
-	idx.Close()
+	_ = idx.Close()
 
 	if err := db.sql.QueryRowContext(ctx, "SELECT count(*) FROM "+quoteIdent(table)).Scan(&info.Rows); err != nil {
 		return nil, err
@@ -149,7 +149,7 @@ func (db *DB) columnNames(ctx context.Context, table string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	var names []string
 	for rows.Next() {
 		var (

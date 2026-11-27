@@ -50,19 +50,19 @@ func newImportCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			defer closeFn()
+			defer func() { _ = closeFn() }()
 
 			db, err := openDB()
 			if err != nil {
 				return err
 			}
-			defer db.Close()
+			defer func() { _ = db.Close() }()
 
 			res, err := db.Import(cmd.Context(), r, opts)
 			if err != nil {
 				return err
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), "imported %d rows into %s (%d columns)\n",
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "imported %d rows into %s (%d columns)\n",
 				res.Rows, res.Table, len(res.Columns))
 			return nil
 		},

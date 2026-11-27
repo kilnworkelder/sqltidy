@@ -18,7 +18,7 @@ func (db *DB) Query(ctx context.Context, query string, args ...any) (*ResultSet,
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	cols, err := rows.Columns()
 	if err != nil {
