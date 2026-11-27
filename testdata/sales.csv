@@ -1,0 +1,4 @@
+id,name,region,amount,active,notes
+1,Ada,EU,12.5,true,first programmer
+2,Grace,US,99,false,compiler pioneer
+3,Linus,EU,7.25,true,kernel maintainer

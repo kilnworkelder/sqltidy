@@ -1,0 +1,3 @@
+id,name,region,amount,active,notes
+2,Grace Hopper,US,105,false,compiler pioneer and COBOL
+4,Barbara,US,42,true,systems programmer

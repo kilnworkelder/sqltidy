@@ -1,0 +1,77 @@
+version: 2
+
+project_name: sqltidy
+
+before:
+  hooks:
+    - go mod tidy
+    - go test ./...
+
+builds:
+  - id: sqltidy
+    main: ./cmd/sqltidy
+    binary: sqltidy
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+
+archives:
+  - formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    files:
+      - README.md
+      - LICENSE
+      - CHANGELOG.md
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+release:
+  prerelease: auto
+
+# Uncomment after creating github.com/kilnworkelder/homebrew-tap and
+# github.com/kilnworkelder/scoop-bucket, and adding the matching repository tokens.
+#
+# brews:
+#   - repository:
+#       owner: kilnworkelder
+#       name: homebrew-tap
+#       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+#     directory: Formula
+#     homepage: "https://github.com/kilnworkelder/sqltidy"
+#     description: "A single-binary SQLite data toolkit"
+#     license: "MIT"
+#     install: |
+#       bin.install "sqltidy"
+#
+# scoops:
+#   - repository:
+#       owner: kilnworkelder
+#       name: scoop-bucket
+#       token: "{{ .Env.SCOOP_BUCKET_GITHUB_TOKEN }}"
+#     homepage: "https://github.com/kilnworkelder/sqltidy"
+#     description: "A single-binary SQLite data toolkit"
+#     license: "MIT"

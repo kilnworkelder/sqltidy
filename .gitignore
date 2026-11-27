@@ -1,0 +1,16 @@
+# Binaries
+/dist/
+/sqltidy
+/sqltidy.exe
+*.exe
+*.test
+*.out
+
+# SQLite
+*.db
+*.db-wal
+*.db-shm
+
+# Editors
+.idea/
+.vscode/
