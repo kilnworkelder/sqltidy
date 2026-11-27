@@ -20,7 +20,7 @@ func newQueryCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			defer db.Close()
+			defer func() { _ = db.Close() }()
 
 			rs, err := db.Query(cmd.Context(), args[0])
 			if err != nil {
@@ -43,7 +43,7 @@ func newSchemaCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			defer db.Close()
+			defer func() { _ = db.Close() }()
 
 			w := cmd.OutOrStdout()
 			if len(args) == 1 {
